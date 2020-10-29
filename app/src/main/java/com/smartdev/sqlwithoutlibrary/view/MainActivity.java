@@ -23,19 +23,21 @@ public class MainActivity extends AppCompatActivity {
     private BuyListAdapter mAdapter;
     private EditText mEditTextName;
     private TextView mTextViewAmount;
+    private AppDBHelper mDBHelper;
     private int mAmount = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AppDBHelper dbHelper = AppDBHelper.getInstance(this);
-        mDatabase = dbHelper.getReadableDatabase();
+        mDBHelper = AppDBHelper.getInstance(this);
+        mDatabase = mDBHelper.getReadableDatabase();
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new BuyListAdapter(this, getAllItems());
+        mAdapter = new BuyListAdapter(this, mDBHelper.getAllItems());
         recyclerView.setAdapter(mAdapter);
         mEditTextName = findViewById(R.id.edittext_name);
         mTextViewAmount = findViewById(R.id.textview_amount);
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }).attachToRecyclerView(recyclerView);
     }
+
     private void increase() {
         mAmount++;
         mTextViewAmount.setText(String.valueOf(mAmount));
@@ -82,34 +85,26 @@ public class MainActivity extends AppCompatActivity {
             mTextViewAmount.setText(String.valueOf(mAmount));
         }
     }
+
+    /*Do all what need to add item*/
     private void addItem() {
         if (mEditTextName.getText().toString().trim().length() == 0 || mAmount == 0) {
             return;
         }
         String name = mEditTextName.getText().toString();
-        ContentValues cv = new ContentValues();
-        cv.put(DBContract.BuyListTable.COLUMN_NAME, name);
-        cv.put(DBContract.BuyListTable.COLUMN_AMOUNT, mAmount);
-        mDatabase.insert(DBContract.BuyListTable.TABLE_NAME, null, cv);
-        mAdapter.swapCursor(getAllItems());
+        mDBHelper.insertItem(name, mAmount);
+        updateAdapter();
         mEditTextName.getText().clear();
     }
 
-
-    private Cursor getAllItems() {
-        return mDatabase.query(
-                DBContract.BuyListTable.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                DBContract.BuyListTable.COLUMN_TIMESTAMP + " DESC"
-        );
-    }
+    /*Do all what need to remove item*/
     private void removeItem(long id) {
-        mDatabase.delete(DBContract.BuyListTable.TABLE_NAME,
-                DBContract.BuyListTable._ID + "=" + id, null);
-        mAdapter.swapCursor(getAllItems());
+        mDBHelper.removeItem(id);
+        updateAdapter();
+    }
+
+    /*Notify adapter that something changed*/
+    private void updateAdapter() {
+        mAdapter.swapCursor(mDBHelper.getAllItems());
     }
 }

@@ -1,6 +1,8 @@
 package com.smartdev.sqlwithoutlibrary.database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -25,6 +27,8 @@ public class AppDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
+        /*Create Table*/
         final String SQL_CREATE_BUY_LIST_TABLE = "CREATE TABLE " +
                 DBContract.BuyListTable.TABLE_NAME + " (" +
                 DBContract.BuyListTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -36,6 +40,7 @@ public class AppDBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_CREATE_BUY_LIST_TABLE);
     }
 
+    /* Do something if database architecture change*/
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         /* Uništava tabelu */
@@ -43,5 +48,32 @@ public class AppDBHelper extends SQLiteOpenHelper {
 
         /* Ponovno kreiranje tabele */
         onCreate(db);
+    }
+
+    /* Get all items from database */
+    public Cursor getAllItems() {
+        return sInstance.getReadableDatabase().query(
+                DBContract.BuyListTable.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                DBContract.BuyListTable.COLUMN_TIMESTAMP + " DESC"
+        );
+    }
+
+    /* Insert new item to database*/
+    public void insertItem (String name, int amount) {
+        ContentValues cv = new ContentValues();
+        cv.put(DBContract.BuyListTable.COLUMN_NAME, name);
+        cv.put(DBContract.BuyListTable.COLUMN_AMOUNT, amount);
+        sInstance.getReadableDatabase().insert(DBContract.BuyListTable.TABLE_NAME, null, cv);
+    }
+
+    /*Remove item from database*/
+    public void removeItem(long id) {
+        sInstance.getReadableDatabase().delete(DBContract.BuyListTable.TABLE_NAME,
+                DBContract.BuyListTable._ID + "=" + id, null);
     }
 }
