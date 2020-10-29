@@ -10,6 +10,15 @@ public class AppDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "buylist.db";
     private static final int DATABASE_VERSION = 1;
 
+    private static AppDBHelper sInstance;
+
+    public static synchronized AppDBHelper getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new AppDBHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
     public AppDBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -29,9 +38,10 @@ public class AppDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        /*Uništavalje tabele*/
+        /* Uništava tabelu */
         db.execSQL("DROP TABLE IF EXISTS " + DBContract.BuyListTable.TABLE_NAME);
-        /*Ponovno kreiranje tabele*/
+
+        /* Ponovno kreiranje tabele */
         onCreate(db);
     }
 }

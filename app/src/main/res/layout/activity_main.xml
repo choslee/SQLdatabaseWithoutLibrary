@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context="com.example.application.grocerylist.MainActivity">
+    tools:context=".view.MainActivity">
     <EditText
         android:id="@+id/edittext_name"
         android:layout_width="match_parent"
