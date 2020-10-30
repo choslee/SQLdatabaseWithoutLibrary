@@ -1,8 +1,6 @@
 package com.smartdev.sqlwithoutlibrary.view;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,15 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.smartdev.sqlwithoutlibrary.R;
-import com.smartdev.sqlwithoutlibrary.database.AppDBHelper;
-import com.smartdev.sqlwithoutlibrary.database.DBContract;
+import com.smartdev.sqlwithoutlibrary.database.BuyItemsRepository;
 
 public class MainActivity extends AppCompatActivity {
-    private SQLiteDatabase mDatabase;
     private BuyListAdapter mAdapter;
     private EditText mEditTextName;
     private TextView mTextViewAmount;
-    private AppDBHelper mDBHelper;
+    private BuyItemsRepository repository;
     private int mAmount = 0;
 
 
@@ -32,12 +28,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDBHelper = AppDBHelper.getInstance(this);
-        mDatabase = mDBHelper.getReadableDatabase();
+        repository = BuyItemsRepository.getInstance(this);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new BuyListAdapter(this, mDBHelper.getAllItems());
+        mAdapter = new BuyListAdapter(this, repository.getAllItems());
         recyclerView.setAdapter(mAdapter);
         mEditTextName = findViewById(R.id.edittext_name);
         mTextViewAmount = findViewById(R.id.textview_amount);
@@ -92,19 +87,19 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         String name = mEditTextName.getText().toString();
-        mDBHelper.insertItem(name, mAmount);
+        repository.insertItem(name,mAmount);
         updateAdapter();
         mEditTextName.getText().clear();
     }
 
     /*Do all what need to remove item*/
     private void removeItem(long id) {
-        mDBHelper.removeItem(id);
+        repository.removeItem(id);
         updateAdapter();
     }
 
     /*Notify adapter that something changed*/
     private void updateAdapter() {
-        mAdapter.swapCursor(mDBHelper.getAllItems());
+        mAdapter.swapCursor(repository.getAllItems());
     }
 }

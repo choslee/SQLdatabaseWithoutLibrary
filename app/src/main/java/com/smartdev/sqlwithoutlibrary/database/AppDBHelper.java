@@ -11,8 +11,8 @@ import androidx.annotation.Nullable;
 public class AppDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "buylist.db";
     private static final int DATABASE_VERSION = 1;
-
     private static AppDBHelper sInstance;
+    private final SQLiteDatabase db = getWritableDatabase();
 
     public static synchronized AppDBHelper getInstance(Context context) {
         if (sInstance == null) {
@@ -27,7 +27,6 @@ public class AppDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
         /*Create Table*/
         final String SQL_CREATE_BUY_LIST_TABLE = "CREATE TABLE " +
                 DBContract.BuyListTable.TABLE_NAME + " (" +
@@ -52,7 +51,7 @@ public class AppDBHelper extends SQLiteOpenHelper {
 
     /* Get all items from database */
     public Cursor getAllItems() {
-        return sInstance.getReadableDatabase().query(
+        return db.query(
                 DBContract.BuyListTable.TABLE_NAME,
                 null,
                 null,
@@ -68,12 +67,12 @@ public class AppDBHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(DBContract.BuyListTable.COLUMN_NAME, name);
         cv.put(DBContract.BuyListTable.COLUMN_AMOUNT, amount);
-        sInstance.getReadableDatabase().insert(DBContract.BuyListTable.TABLE_NAME, null, cv);
+        db.insert(DBContract.BuyListTable.TABLE_NAME, null, cv);
     }
 
     /*Remove item from database*/
     public void removeItem(long id) {
-        sInstance.getReadableDatabase().delete(DBContract.BuyListTable.TABLE_NAME,
+        db.delete(DBContract.BuyListTable.TABLE_NAME,
                 DBContract.BuyListTable._ID + "=" + id, null);
     }
 }
