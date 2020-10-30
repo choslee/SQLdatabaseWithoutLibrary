@@ -8,6 +8,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import com.smartdev.sqlwithoutlibrary.model.BuyItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class AppDBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "buylist.db";
     private static final int DATABASE_VERSION = 1;
@@ -50,8 +55,9 @@ public class AppDBHelper extends SQLiteOpenHelper {
     }
 
     /* Get all items from database */
-    public Cursor getAllItems() {
-        return db.query(
+    public List<BuyItem> getAllItemsFromDB() {
+        List<BuyItem> buyItemsList = new ArrayList<>();
+        Cursor cursor = db.query(
                 DBContract.BuyListTable.TABLE_NAME,
                 null,
                 null,
@@ -60,19 +66,35 @@ public class AppDBHelper extends SQLiteOpenHelper {
                 null,
                 DBContract.BuyListTable.COLUMN_TIMESTAMP + " DESC"
         );
+
+        while (cursor.moveToNext()){
+            BuyItem item = new BuyItem();
+            setItemFromCurrentCursor(item, cursor);
+            buyItemsList.add(item);
+        }
+        return buyItemsList;
+    }
+
+    private void setItemFromCurrentCursor(BuyItem item, Cursor cursor) {
+        item.setName(cursor.getString(cursor.getColumnIndex(DBContract.BuyListTable.COLUMN_NAME)));
+        item.setId(cursor.getLong(cursor.getColumnIndex(DBContract.BuyListTable._ID)));
+        item.setAmount(cursor.getString(cursor.getColumnIndex(DBContract.BuyListTable.COLUMN_AMOUNT)));
+        item.setmTimestamp(cursor.getString(cursor.getColumnIndex(DBContract.BuyListTable.COLUMN_TIMESTAMP)));
     }
 
     /* Insert new item to database*/
-    public void insertItem (String name, int amount) {
+    public void insertItemToDB(BuyItem buyItem) {
         ContentValues cv = new ContentValues();
-        cv.put(DBContract.BuyListTable.COLUMN_NAME, name);
-        cv.put(DBContract.BuyListTable.COLUMN_AMOUNT, amount);
+        cv.put(DBContract.BuyListTable.COLUMN_NAME, buyItem.getName());
+        cv.put(DBContract.BuyListTable.COLUMN_AMOUNT, buyItem.getAmount());
         db.insert(DBContract.BuyListTable.TABLE_NAME, null, cv);
     }
 
     /*Remove item from database*/
-    public void removeItem(long id) {
+    public void removeItemFromDB(long id) {
         db.delete(DBContract.BuyListTable.TABLE_NAME,
-                DBContract.BuyListTable._ID + "=" + id, null);
+                DBContract.BuyListTable._ID + "=" + id,
+                null);
+
     }
 }

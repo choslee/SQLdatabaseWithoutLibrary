@@ -6,7 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
 import com.smartdev.sqlwithoutlibrary.database.BuyItemsRepository;
+import com.smartdev.sqlwithoutlibrary.model.BuyItem;
 import com.smartdev.sqlwithoutlibrary.view.BuyListAdapter;
+
+import java.util.List;
 
 public class MainActivityViewModel extends AndroidViewModel {
     private BuyListAdapter mAdapter;
@@ -15,21 +18,17 @@ public class MainActivityViewModel extends AndroidViewModel {
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         repository = BuyItemsRepository.getInstance(application);
-        mAdapter = new BuyListAdapter(application, repository.getAllItems());
+        mAdapter = new BuyListAdapter(application, getBuyItemsList() );
+
     }
 
     public BuyListAdapter getAdapter(){
         return mAdapter;
     }
 
-    /*Notify adapter that something changed*/
-    public void updateAdapter() {
-        mAdapter.swapCursor(repository.getAllItems());
-    }
-
     /*Insert item to DB*/
-    public void insertItemDB(String name, int amount) {
-        repository.insertItem(name,amount);
+    public void insertItemDB(BuyItem buyItem) {
+        repository.insertItem(buyItem);
         updateAdapter();
     }
 
@@ -39,7 +38,13 @@ public class MainActivityViewModel extends AndroidViewModel {
         updateAdapter();
     }
 
+    public List<BuyItem> getBuyItemsList() {
+        return repository.getAllItems();
+    }
 
-
+    /*Notify adapter that something changed*/
+    public void updateAdapter() {
+        getAdapter().swapData(repository.getAllItems());
+    }
 
 }

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.smartdev.sqlwithoutlibrary.R;
+import com.smartdev.sqlwithoutlibrary.model.BuyItem;
 import com.smartdev.sqlwithoutlibrary.viewmodel.MainActivityViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -81,13 +82,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     /*Do all what need to add item*/
     private void addItem() {
         if (mEditTextName.getText().toString().trim().length() == 0 || mAmount == 0) {
             return;
         }
         String name = mEditTextName.getText().toString();
-        mMainViewModel.insertItemDB(name,mAmount);
+        BuyItem newBuyItem = new BuyItem();
+        newBuyItem.setName(name);
+        newBuyItem.setAmount(String.valueOf(mAmount));
+        mMainViewModel.insertItemDB(newBuyItem);
         mEditTextName.getText().clear();
     }
 }

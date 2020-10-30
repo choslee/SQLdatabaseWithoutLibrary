@@ -1,29 +1,37 @@
 package com.smartdev.sqlwithoutlibrary.view;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.smartdev.sqlwithoutlibrary.R;
-import com.smartdev.sqlwithoutlibrary.database.DBContract;
+import com.smartdev.sqlwithoutlibrary.model.BuyItem;
+
+import java.util.List;
 
 public class BuyListAdapter extends RecyclerView.Adapter<BuyListAdapter.BuyListViewHolder> {
     private Context mContext;
-    private Cursor mCursor;
-    public BuyListAdapter(Context context, Cursor cursor) {
+    private List<BuyItem> mList;
+
+    public BuyListAdapter(Context context, List<BuyItem> buyItemList) {
         mContext = context;
-        mCursor = cursor;
+        mList = buyItemList;
     }
     public class BuyListViewHolder extends RecyclerView.ViewHolder {
         public TextView nameText;
         public TextView countText;
+        View mView;
+
         public BuyListViewHolder(View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.textview_name_item);
             countText = itemView.findViewById(R.id.textview_amount_item);
+            mView = itemView;
         }
     }
     @Override
@@ -34,29 +42,30 @@ public class BuyListAdapter extends RecyclerView.Adapter<BuyListAdapter.BuyListV
     }
     @Override
     public void onBindViewHolder(BuyListViewHolder holder, int position) {
-        if (!mCursor.moveToPosition(position)) {
-            return;
-        }
-        String name = mCursor.getString(mCursor.getColumnIndex(DBContract.BuyListTable.COLUMN_NAME));
-        int amount = mCursor.getInt(mCursor.getColumnIndex(DBContract.BuyListTable.COLUMN_AMOUNT));
-        long id = mCursor.getLong(mCursor.getColumnIndex(DBContract.BuyListTable._ID));
 
-        holder.nameText.setText(name);
-        holder.countText.setText(String.valueOf(amount));
-        holder.itemView.setTag(id);
+        final BuyItem buyItem = mList.get(position);
+
+        holder.nameText.setText(buyItem.getName());
+        holder.countText.setText(String.valueOf(buyItem.getAmount()));
+        holder.itemView.setTag(buyItem.getId());
+
+        holder.mView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mContext, "Kliknut je " + buyItem.getName(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
     @Override
     public int getItemCount() {
-        return mCursor.getCount();
+        return mList.size();
     }
 
-
-    public void swapCursor(Cursor newCursor) {
-        if (mCursor != null) {
-            mCursor.close();
-        }
-        mCursor = newCursor;
-        if (newCursor != null) {
+    /* Update list in adapter*/
+    public void swapData(List<BuyItem> newList) {
+        mList = newList;
+        if (newList != null) {
             notifyDataSetChanged();
         }
     }

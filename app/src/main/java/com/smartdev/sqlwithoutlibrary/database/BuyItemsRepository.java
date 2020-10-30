@@ -1,9 +1,11 @@
 package com.smartdev.sqlwithoutlibrary.database;
 
 import android.content.Context;
-import android.database.Cursor;
 
+import com.smartdev.sqlwithoutlibrary.model.BuyItem;
 import com.smartdev.sqlwithoutlibrary.view.MainActivity;
+
+import java.util.List;
 
 public class BuyItemsRepository {
     private AppDBHelper mHandler;
@@ -23,17 +25,20 @@ public class BuyItemsRepository {
         return mInstance;
     }
 
-    public Cursor getAllItems () {
-        return mHandler.getAllItems();
+    public List<BuyItem> getAllItems () {
+        List<BuyItem> listFromDB = mHandler.getAllItemsFromDB();
+        return listFromDB;
     }
 
-    public void insertItem (String name, int amount) {
-        mHandler.insertItem(name, amount);
+    public void insertItem (BuyItem buyItem) {
+        mHandler.insertItemToDB(buyItem);
     }
 
     public void removeItem(long id) {
-       mHandler.removeItem(id);
+       mHandler.removeItemFromDB(id);
     }
+
+
 
 
 
