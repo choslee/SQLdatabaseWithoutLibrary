@@ -1,6 +1,5 @@
 package com.smartdev.sqlwithoutlibrary.view;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,19 +7,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.smartdev.sqlwithoutlibrary.R;
-import com.smartdev.sqlwithoutlibrary.database.BuyItemsRepository;
+import com.smartdev.sqlwithoutlibrary.viewmodel.MainActivityViewModel;
 
 public class MainActivity extends AppCompatActivity {
-    private BuyListAdapter mAdapter;
     private EditText mEditTextName;
     private TextView mTextViewAmount;
-    private BuyItemsRepository repository;
     private int mAmount = 0;
+    private MainActivityViewModel mMainViewModel;
 
 
     @Override
@@ -28,12 +27,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        repository = BuyItemsRepository.getInstance(this);
+        mMainViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new BuyListAdapter(this, repository.getAllItems());
-        recyclerView.setAdapter(mAdapter);
+
+        recyclerView.setAdapter(mMainViewModel.getAdapter());
         mEditTextName = findViewById(R.id.edittext_name);
         mTextViewAmount = findViewById(R.id.textview_amount);
         Button buttonIncrease = findViewById(R.id.button_increase);
@@ -51,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 decrease();
             }
         });
+
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                removeItem((long) viewHolder.itemView.getTag());
+                mMainViewModel.removeItemFromDB((long) viewHolder.itemView.getTag());
             }
         }).attachToRecyclerView(recyclerView);
     }
@@ -87,19 +87,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         String name = mEditTextName.getText().toString();
-        repository.insertItem(name,mAmount);
-        updateAdapter();
+        mMainViewModel.insertItemDB(name,mAmount);
         mEditTextName.getText().clear();
-    }
-
-    /*Do all what need to remove item*/
-    private void removeItem(long id) {
-        repository.removeItem(id);
-        updateAdapter();
-    }
-
-    /*Notify adapter that something changed*/
-    private void updateAdapter() {
-        mAdapter.swapCursor(repository.getAllItems());
     }
 }
