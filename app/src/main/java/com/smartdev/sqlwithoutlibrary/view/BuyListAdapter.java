@@ -64,10 +64,8 @@ public class BuyListAdapter extends RecyclerView.Adapter<BuyListAdapter.BuyListV
     }
 
     /* Update list in adapter*/
-    public void swapData(List<BuyItem> newList) {
-        mList = newList;
-        if (newList != null) {
-            notifyDataSetChanged();
-        }
+    public void updateAdapter(List<BuyItem> newList) {
+        this.mList = newList;
+        notifyDataSetChanged();
     }
 }

@@ -17,6 +17,8 @@ import com.smartdev.sqlwithoutlibrary.R;
 import com.smartdev.sqlwithoutlibrary.model.BuyItem;
 import com.smartdev.sqlwithoutlibrary.viewmodel.MainActivityViewModel;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     private EditText mEditTextName;
     private TextView mTextViewAmount;
@@ -32,11 +34,11 @@ public class MainActivity extends AppCompatActivity {
         mMainViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
         /* Observe changes in list emitted from ViewModel*/
-        mMainViewModel.getAllItemsFromViewModel().observe(this, new Observer() {
+        mMainViewModel.getAllItemsFromViewModel().observe(this, new Observer<List<BuyItem>>() {
             @Override
-            public void onChanged(Object o) {
+            public void onChanged(List<BuyItem> buyItemList) {
                 /*React to changes in list*/
-                mMainViewModel.updateAdapter();
+                mMainViewModel.getAdapter().updateAdapter(buyItemList);
             }
         });
 

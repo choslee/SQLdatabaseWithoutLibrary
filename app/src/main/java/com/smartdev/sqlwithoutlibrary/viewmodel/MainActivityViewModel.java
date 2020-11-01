@@ -51,8 +51,4 @@ public class MainActivityViewModel extends AndroidViewModel {
         return mAdapter;
     }
 
-    /*Notify adapter that something changed*/
-    public void updateAdapter() {
-        getAdapter().swapData(repository.getAllItems());
-    }
 }
