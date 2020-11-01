@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppDBHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "buylist.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "buyList.db";
+    private static final int DATABASE_VERSION = 3;
     private static AppDBHelper sInstance;
     private final SQLiteDatabase db = getWritableDatabase();
 

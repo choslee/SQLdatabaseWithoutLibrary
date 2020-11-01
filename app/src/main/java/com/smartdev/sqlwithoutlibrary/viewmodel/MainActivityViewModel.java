@@ -4,6 +4,8 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.smartdev.sqlwithoutlibrary.database.BuyItemsRepository;
 import com.smartdev.sqlwithoutlibrary.model.BuyItem;
@@ -18,33 +20,39 @@ public class MainActivityViewModel extends AndroidViewModel {
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         repository = BuyItemsRepository.getInstance(application);
-        mAdapter = new BuyListAdapter(application, getBuyItemsList() );
+        mAdapter = new BuyListAdapter(application, repository.getAllItems() );
 
+        /* This is MutableLiveData from repository (not new MutableLiveData<>()) */
+        allDataItems = repository.getAllItemsFromRepo();
+    }
+
+
+    private MutableLiveData<List<BuyItem>> allDataItems;
+    /* Getter from LiveData from ViewModel*/
+    public LiveData<List<BuyItem>> getAllItemsFromViewModel() {
+        return allDataItems;
+    }
+
+    /*Insert item to DB*/
+    public void insertItemDB(BuyItem buyItem) {
+        repository.insertItem(buyItem);
+        /*Setter to LiveData*/
+        allDataItems.postValue(repository.getAllItems());
+    }
+
+    /* Remove item from DB*/
+    public void removeItemFromDB(long id) {
+        repository.removeItem(id);
+        /*Setter to LiveData*/
+        allDataItems.postValue(repository.getAllItems());
     }
 
     public BuyListAdapter getAdapter(){
         return mAdapter;
     }
 
-    /*Insert item to DB*/
-    public void insertItemDB(BuyItem buyItem) {
-        repository.insertItem(buyItem);
-        updateAdapter();
-    }
-
-    /* Remove item from DB*/
-    public void removeItemFromDB(long id) {
-        repository.removeItem(id);
-        updateAdapter();
-    }
-
-    public List<BuyItem> getBuyItemsList() {
-        return repository.getAllItems();
-    }
-
     /*Notify adapter that something changed*/
     public void updateAdapter() {
         getAdapter().swapData(repository.getAllItems());
     }
-
 }

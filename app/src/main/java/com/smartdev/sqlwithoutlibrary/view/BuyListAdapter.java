@@ -52,6 +52,7 @@ public class BuyListAdapter extends RecyclerView.Adapter<BuyListAdapter.BuyListV
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*TODO: napraviti edit stranu */
                 Toast.makeText(mContext, "Kliknut je " + buyItem.getName(), Toast.LENGTH_SHORT).show();
             }
         });

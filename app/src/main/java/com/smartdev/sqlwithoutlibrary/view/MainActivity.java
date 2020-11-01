@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,15 +31,24 @@ public class MainActivity extends AppCompatActivity {
 
         mMainViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
 
+        /* Observe changes in list emitted from ViewModel*/
+        mMainViewModel.getAllItemsFromViewModel().observe(this, new Observer() {
+            @Override
+            public void onChanged(Object o) {
+                /*React to changes in list*/
+                mMainViewModel.updateAdapter();
+            }
+        });
+
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         recyclerView.setAdapter(mMainViewModel.getAdapter());
         mEditTextName = findViewById(R.id.edittext_name);
         mTextViewAmount = findViewById(R.id.textview_amount);
         Button buttonIncrease = findViewById(R.id.button_increase);
         Button buttonDecrease = findViewById(R.id.button_decrease);
         Button buttonAdd = findViewById(R.id.button_add);
+
         buttonIncrease.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,18 +92,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
     /*Do all what need to add item*/
     private void addItem() {
         if (mEditTextName.getText().toString().trim().length() == 0 || mAmount == 0) {
             return;
         }
+        /* Get data from user input*/
         String name = mEditTextName.getText().toString();
+
+        /*Insert  new  BuyItem to DB*/
         BuyItem newBuyItem = new BuyItem();
         newBuyItem.setName(name);
         newBuyItem.setAmount(String.valueOf(mAmount));
         mMainViewModel.insertItemDB(newBuyItem);
+
         mEditTextName.getText().clear();
     }
 }
