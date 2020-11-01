@@ -28,7 +28,7 @@ public class MainActivityViewModel extends AndroidViewModel {
 
 
     private MutableLiveData<List<BuyItem>> allDataItems;
-    /* Getter from LiveData from ViewModel*/
+    /* LiveData Getter from ViewModel*/
     public LiveData<List<BuyItem>> getAllItemsFromViewModel() {
         return allDataItems;
     }
@@ -36,14 +36,14 @@ public class MainActivityViewModel extends AndroidViewModel {
     /*Insert item to DB*/
     public void insertItemDB(BuyItem buyItem) {
         repository.insertItem(buyItem);
-        /*Setter to LiveData*/
+        /*Set new value end emit that*/
         allDataItems.postValue(repository.getAllItems());
     }
 
     /* Remove item from DB*/
     public void removeItemFromDB(long id) {
         repository.removeItem(id);
-        /*Setter to LiveData*/
+        /*Set new value end emit that*/
         allDataItems.postValue(repository.getAllItems());
     }
 

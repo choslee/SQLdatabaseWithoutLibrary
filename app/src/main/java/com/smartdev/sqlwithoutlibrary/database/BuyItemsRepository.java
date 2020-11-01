@@ -11,7 +11,6 @@ import java.util.List;
 public class BuyItemsRepository {
     private AppDBHelper mHandler;
 
-
     public BuyItemsRepository(Context context){
         mHandler = new AppDBHelper(context);
     }

@@ -67,6 +67,7 @@ public class AppDBHelper extends SQLiteOpenHelper {
                 DBContract.BuyListTable.COLUMN_TIMESTAMP + " DESC"
         );
 
+        /*Popunjavnje liste iz Cursora*/
         while (cursor.moveToNext()){
             BuyItem item = new BuyItem();
             setItemFromCurrentCursor(item, cursor);
